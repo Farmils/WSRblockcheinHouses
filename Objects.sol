@@ -79,7 +79,7 @@ contract Houses{
         saleArray[_id].buyer = msg.sender;
     }
     // Принятие средств
-    function confirmSale(uint _id) external  onlyOwner(_id) {
+    function confirmSale(uint _id) external  onlyOwner(saleArray[_id].id) {
         require(saleArray[_id].timeOfSale > block.timestamp , unicode"Предложение не актуально");
         require(saleArray[_id].buyer != address(0), unicode"Покупатель ещё не найден"); 
         payable (msg.sender).transfer(saleArray[_id].price); 
@@ -90,7 +90,7 @@ contract Houses{
         realties[saleArray[_id].id].timeOfLastSale = block.timestamp;
     }
     // Отмена продажи
-    function cancelSale (uint _id) external onlyOwner(_id) {
+    function cancelSale (uint _id) external onlyOwner(saleArray[_id].id) {
         require(saleArray[_id].timeOfSale > block.timestamp, unicode"Предложение неактуально");
         saleArray[_id].timeOfSale = block.timestamp;        
     }
@@ -102,7 +102,7 @@ contract Houses{
         saleArray[_id].buyer = address(0);
     }
     // Дарение
-    function createGift(uint _id, address _newOwner) external  onlyOwner(_id) propertyCheckOnDepositGiftSale(_id) {
+    function createGift(uint _id, address _newOwner) external  onlyOwner(giftArray[_id].id) propertyCheckOnDepositGiftSale(_id) {
         require(_newOwner != address(0));
         giftArray.push(Gift(_id,_newOwner,block.timestamp - realties[_id].timeOfLastSale ));
     }
@@ -121,7 +121,7 @@ contract Houses{
         giftArray[_id].newOwner = address(0);
     } 
     // Создание предложения о залоге
-    function createDeposit (uint _id,uint _price, uint _timeOfDeposit) external onlyOwner(_id) propertyCheckOnDepositGiftSale(_id) {
+    function createDeposit (uint _id,uint _price, uint _timeOfDeposit) external onlyOwner(depositArray[_id].id) propertyCheckOnDepositGiftSale(_id) {
         require(_price > 0 , unicode"Предложение не актуально");
         depositArray.push(Deposit(_id,_price, address(0),_timeOfDeposit, 0));
        
